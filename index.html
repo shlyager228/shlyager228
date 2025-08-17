@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой WebApp</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('https://example.com/your-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .clock {
+            font-size: 3em;
+            margin: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px;
+        }
+        .user-info {
+            font-size: 1.2em;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock" id="clock">00:00:00</div>
+    <button id="action-button">Нажми меня</button>
+    <div class="user-info" id="user-info">
+        Привет, <span id="username"></span>, ты ведь <span id="fullname"></span>?<br>
+        Твой ID: <span id="user-id"></span><br>
+        Ты запускал приложение <span id="launch-count">0</span> раз.
+    </div>
+
+    <script>
+        // Часы (Московское время)
+        function updateClock() {
+            const now = new Date();
+            const moscowTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3 (Москва)
+            const timeStr = moscowTime.toLocaleTimeString();
+            document.getElementById('clock').textContent = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Получаем данные пользователя из Telegram
+        if (window.Telegram && Telegram.WebApp) {
+            const tg = Telegram.WebApp;
+            const user = tg.initDataUnsafe.user;
+
+            if (user) {
+                document.getElementById('username').textContent = user.username || 'Неизвестно';
+                document.getElementById('fullname').textContent = `${user.first_name} ${user.last_name || ''}`;
+                document.getElementById('user-id').textContent = user.id;
+            }
+
+            // Счетчик запусков (используем localStorage)
+            let launchCount = localStorage.getItem('launchCount') || 0;
+            launchCount++;
+            localStorage.setItem('launchCount', launchCount);
+            document.getElementById('launch-count').textContent = launchCount;
+        }
+
+        // Обработчик кнопки (пока просто alert)
+        document.getElementById('action-button').addEventListener('click', () => {
+            alert('Кнопка работает! Позже добавим функционал.');
+        });
+    </script>
+</body>
+</html>
